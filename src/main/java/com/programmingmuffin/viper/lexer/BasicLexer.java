@@ -42,44 +42,43 @@ public class BasicLexer implements ILexer {
         this.line = line;
         while (this.state.current < this.line.length()) {
             if (current() == '(') {
-                temporaryTokens.add(tokenFactory.getToken(null, TokenType.LPAREN));
+                temporaryTokens.add(tokenFactory.getToken(null, TokenType.LPAREN, this.state.start, this.state.current));
                 next();
                 reset();
             } else if (current() == ')') {
-                temporaryTokens.add(tokenFactory.getToken(null, TokenType.RPAREN));
+                temporaryTokens.add(tokenFactory.getToken(null, TokenType.RPAREN, this.state.start, this.state.current));
                 next();
                 reset();
-            } else if (Character.isAlphabetic(current())) {
-                scanIdentifier();
-            } else if (current() == ' ') {
+            } else if (Character.isWhitespace(current())) {
                 next();
                 reset();
             } else if (current() == '{') {
-                temporaryTokens.add(tokenFactory.getToken(null, TokenType.LBRACE));
+                temporaryTokens.add(tokenFactory.getToken(null, TokenType.LBRACE, this.state.start, this.state.current));
                 next();
                 reset();
             } else if (current() == '}') {
-                temporaryTokens.add(tokenFactory.getToken(null, TokenType.RBRACE));
+                temporaryTokens.add(tokenFactory.getToken(null, TokenType.RBRACE, this.state.start, this.state.current));
                 next();
                 reset();
+            } else if (Character.isLetter(current())) {
+                scanIdentifier();
             }
         }
         return this.temporaryTokens;
     }
 
     private void scanIdentifier() {
-        if (Character.isAlphabetic(lookAhead()) || Character.isDigit(lookAhead())) {
-            next();
+        next();
+        if (Character.isLetterOrDigit(current())) {
             scanIdentifier();
         } else {
             if (KEYWORDS.contains(scan())) {
-                temporaryTokens.add(tokenFactory.getToken(scan(), TokenType.KEYWORD));
-                next();
+                temporaryTokens.add(tokenFactory.getToken(scan(), TokenType.KEYWORD, this.state.start, this.state.current));
+                reset();
+            } else {
+                temporaryTokens.add(tokenFactory.getToken(scan(), TokenType.IDENT, this.state.start, this.state.current));
                 reset();
             }
-            temporaryTokens.add(tokenFactory.getToken(scan(), TokenType.IDENT));
-            next();
-            reset();
         }
     }
 
@@ -100,7 +99,7 @@ public class BasicLexer implements ILexer {
     }
 
     private String scan() {
-        return this.line.substring(this.state.start, this.state.current + 1);
+        return this.line.substring(this.state.start, this.state.current);
     }
 
     private static class State {

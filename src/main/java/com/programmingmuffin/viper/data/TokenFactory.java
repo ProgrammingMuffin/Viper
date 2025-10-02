@@ -2,6 +2,13 @@ package com.programmingmuffin.viper.data;
 
 public class TokenFactory {
 
+    public Token getToken(String value, TokenType type, Integer start, Integer end) {
+        Token token = this.getToken(value, type);
+        token.start = start;
+        token.end = end;
+        return token;
+    }
+
     public Token getToken(String value, TokenType type) {
         Token token = null;
         switch (type) {
