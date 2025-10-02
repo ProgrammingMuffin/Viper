@@ -14,9 +14,9 @@ public class BasicLexer implements ILexer {
     private List<Token> temporaryTokens;
 
     private static final List<String> KEYWORDS = Arrays.asList(
-            "private",
-            "static",
-            "void"
+            "state",
+            "behavior",
+            "datapoint"
     );
 
     private State state;
